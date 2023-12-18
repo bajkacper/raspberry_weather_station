@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8">
+        <title>Raspberry Pi Clock and Temperature Data</title>
+        <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <title>Raspberry Pi Info</title>
+</head>
+<!--<body>
+    <h1>Raspberry Pi Information</h1>
+    <p id="temperature">Temperature: </p>
+    <p id="alarm">Alarm: (Not set)</p>
+    <p id="alarm-status">Alarm Status: (Not set)</p>
+    <p id="current-time">Current Time: </p>
+
+    <button onclick="setAlarm()">Set Alarm</button>
+    <button onclick="refreshTemperature()">Refresh Temperature</button>
+-->
+<body>
+    <div class="container">
+        <div class="header">
+            <div class="title">Raspberry Pi Information</div>
+        </div>
+        <div class="section">
+            <div class="label">Temperature:</div>
+            <div class="value" id="temperature"> </div>
+        </div>
+        <div class="section">
+            <div class="label">Alarm:</div>
+            <div class="value" id="alarm"> (Not set) </div>
+        </div>
+        <div class="section">
+            <div class="label">Alarm Status:</div>
+            <div class="value" id="alarm-status"> (Not set) </div>
+        </div>
+        <div class="section">
+            <div class="label">Time:</div>
+            <div class="value" id="current-time"> </div>
+        </div>
+        <div class="button-container">
+            <button class="button" onclick="setAlarm()">Ustaw Alarm</button>
+<button class="button" onclick="turnOffAlarm()">Wylacz Alarm</button>      
+      <button class="button" onclick="refreshTemperature()">Odswiez Temperature</button>
+        
+</div>
+    </div>
+</body>
+<script>
+	function turnOffAlarm() {
+    fetch('/turn_off_alarm', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+    })
+    .then(response => response.json())
+    .then(data => {
+        document.getElementById('alarm').innerText = 'Alarm: (Not set)';
+        document.getElementById('alarm-status').innerText = 'Alarm Status: (Not set)';
+        alert(data.message);
+    });
+}
+        function setAlarm() {
+	var regex = /^(0[0-9]|1[0-9]|2[0-3]):[0-5][0-9]:[0-5][0-9]$/;
+            var newAlarm = prompt("Ustaw alarm (HH:mm:ss):");
+            if (newAlarm !== null && regex.test(newAlarm)) {
+                fetch('/set_alarm', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ alarm: newAlarm }),
+                })
+                .then(response => response.json())
+                .then(data => {
+		    console.log(data);
+                    document.getElementById('alarm').innerText =  data.alarm ;
+                });
+            }else{
+		alert("Nieprawidlowy format czasu. oczekiwano HH:mm:ss.");}
+        }
+        
+        function fetchAlarm() {
+    fetch('/get_alarm')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('alarm').innerText = (data.alarm ? data.alarm : '(Not set)');
+        });
+    
+    fetch('/get_alarm_status')
+        .then(response => response.json())
+        .then(data => {
+            document.getElementById('alarm-status').innerText =  data.alarm_status;
+        });
+}
+        function refreshTemperature() {
+            fetch('/get_temperature')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('temperature').innerText =  data.temperature;
+                });
+        }
+
+        function refreshCurrentTime() {
+            fetch('/get_current_time')
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('current-time').innerText =  data.current_time;
+                });
+        }
+
+        // Refresh temperature and date/time every 5 seconds
+        setInterval(function() {
+            refreshTemperature();
+            refreshCurrentTime();
+            fetchAlarm();
+            fetchData();
+        }, 5000);
+
+        // Initial update
+        refreshTemperature();
+        refreshCurrentTime();
+        fetchAlarm();
+    </script>
+</body>
+</html>
+
