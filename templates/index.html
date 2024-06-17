@@ -4,20 +4,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta charset="UTF-8">
-        <title>Raspberry Pi Clock and Temperature Data</title>
+        <title>Raspberry Pi clock and temperature data</title>
         <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
     <title>Raspberry Pi Info</title>
 </head>
-<!--<body>
-    <h1>Raspberry Pi Information</h1>
-    <p id="temperature">Temperature: </p>
-    <p id="alarm">Alarm: (Not set)</p>
-    <p id="alarm-status">Alarm Status: (Not set)</p>
-    <p id="current-time">Current Time: </p>
-
-    <button onclick="setAlarm()">Set Alarm</button>
-    <button onclick="refreshTemperature()">Refresh Temperature</button>
--->
 <body>
     <div class="container">
         <div class="header">
@@ -40,9 +30,9 @@
             <div class="value" id="current-time"> </div>
         </div>
         <div class="button-container">
-            <button class="button" onclick="setAlarm()">Ustaw Alarm</button>
-<button class="button" onclick="turnOffAlarm()">Wylacz Alarm</button>      
-      <button class="button" onclick="refreshTemperature()">Odswiez Temperature</button>
+            <button class="button" onclick="setAlarm()">Set alarm</button>
+<button class="button" onclick="turnOffAlarm()">Turn off alarm</button>      
+      <button class="button" onclick="refreshTemperature()">Refresh Temperature</button>
         
 </div>
     </div>
@@ -79,7 +69,7 @@
                     document.getElementById('alarm').innerText =  data.alarm ;
                 });
             }else{
-		alert("Nieprawidlowy format czasu. oczekiwano HH:mm:ss.");}
+		alert("Invalid time format. required HH:mm:ss.");}
         }
         
         function fetchAlarm() {
@@ -111,7 +101,6 @@
                 });
         }
 
-        // Refresh temperature and date/time every 5 seconds
         setInterval(function() {
             refreshTemperature();
             refreshCurrentTime();
@@ -119,7 +108,6 @@
             fetchData();
         }, 5000);
 
-        // Initial update
         refreshTemperature();
         refreshCurrentTime();
         fetchAlarm();
