@@ -17,7 +17,7 @@ GPIO.cleanup()
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
 
-#czujnik
+#sensor 
 bus = SMBus(1)
 bme280 = BME280(i2c_dev=bus)
 
@@ -55,9 +55,6 @@ def play():
             break
         t += 1
 
-
-# play()
-
 # LCD
 lcd_rs = 25
 lcd_en = 24
@@ -74,20 +71,17 @@ GPIO.setup(21,GPIO.OUT)
 GPIO.setup(20,GPIO.OUT)
 GPIO.setup(26,GPIO.OUT)
 
-# dioda RGB tu zaimplementowac 21,20,26
 def led(ports):
 	GPIO.output(21, GPIO.LOW)
 	GPIO.output(20, GPIO.LOW)
 	GPIO.output(26, GPIO.LOW)
 	GPIO.output(ports, GPIO.HIGH)
-#time.sleep(1)
-#GPIO.output(LED_PIN, GPIO.LOW)
 
-# inne zmienne
+# other variables
 isWeather = False;
 lcd.clear()
 lcd.message("HELLO KACPER")
-#wlaczenie RGB
+#RGB
 def rgb():
     RUNNING = True
 
@@ -128,84 +122,8 @@ def rgb():
     GPIO.cleanup(21)
     GPIO.cleanup(26)
 
-
-#rgb()
 lcd.clear()
 
-"""
-def rgb_red():
-    green = 20
-    red = 21
-    blue = 26
-
-    GPIO.setmode(GPIO.BCM)
-
-    # definiujemy wszystkie kanały jako wyjścia
-    GPIO.setup(red, GPIO.OUT)
-    GPIO.setup(green, GPIO.OUT)
-    GPIO.setup(blue, GPIO.OUT)
-
-    # wybór częstotliwości przebiegu PWM
-    Freq = 100
-
-    # definicja kanałów PWM na poszczególnych pinach
-    RED = GPIO.PWM(red, Freq)
-    GREEN = GPIO.PWM(green, Freq)
-    BLUE = GPIO.PWM(blue, Freq)
-    RED.start(100)
-    GREEN.start(1)
-    BLUE.start(1)
-        # uruchomienie PWM, 100 oznacza 100% wypełnienia
-    GREEN.ChangeDutyCycle(0)
-    BLUE.ChangeDutyCycle(100)
-    RED.ChangeDutyCycle(0)
-    time.sleep(1)
-        # opóźnienie na czas trwania programu
-   # time.sleep(10)  # Możesz dostosować ten czas
-
-rgb_red()
-
-def rgb_red():
-    green = 20
-    red = 21
-    blue = 26
-
-    GPIO.setmode(GPIO.BCM)
-
-    GPIO.setup(red, GPIO.OUT)
-    GPIO.setup(green, GPIO.OUT)
-    GPIO.setup(blue, GPIO.OUT)
-
-    Freq = 100
-
-    RED = GPIO.PWM(red, Freq)
-    GREEN = GPIO.PWM(green, Freq)
-    BLUE = GPIO.PWM(blue, Freq)
-    RED.start(100)
-    #GREEN.start(1)
-    #BLUE.start(1)
-
-   # try:
-       # while True:
-            # Ustaw wartości PWM tutaj
-    GREEN.ChangeDutyCycle(1)
-    BLUE.ChangeDutyCycle(10)
-    RED.ChangeDutyCycle(100)
-
-            # Tutaj możesz dodać dodatkowe operacje, jeśli są potrzebne
-
-   except KeyboardInterrupt:
-        # Obsługa przerwania klawiatury (Ctrl+C)
-        pass
-    finally:
-        # Wyłącz PWM i wyczyszczenie ustawień GPIO przed zakończeniem programu
-        RED.stop()
-        GREEN.stop()
-        BLUE.stop()
-        GPIO.cleanup()
-"""
-# Wywołaj funkcję
-#rgb_red()
 
 alarm_set=False
 
@@ -228,13 +146,13 @@ def set_alarm_p():
     lcd.show_cursor(True)
     lcd.message("Set hour:")
 
-    while GPIO.input(0) != GPIO.LOW:  # Assuming Button[3] corresponds to GPIO input 3
-        if GPIO.input(13) == GPIO.LOW:  # Assuming Button[1] corresponds to GPIO input 1
+    while GPIO.input(0) != GPIO.LOW:  
+        if GPIO.input(13) == GPIO.LOW:  
             set_hour += 1
             time.sleep(0.2)
             set_hour = set_hour % 24
 
-        elif GPIO.input(5) == GPIO.LOW:  # Assuming Button[2] corresponds to GPIO input 2
+        elif GPIO.input(5) == GPIO.LOW:  
             set_hour -= 1
             time.sleep(0.2)
             set_hour = set_hour % 24
@@ -252,13 +170,13 @@ def set_alarm_p():
     time.sleep(0.4)
     lcd.message("Set minute:")
 
-    while GPIO.input(0) != GPIO.LOW:  # Assuming Button[3] corresponds to GPIO input 3
-        if GPIO.input(13) == GPIO.LOW:  # Assuming Button[1] corresponds to GPIO input 1
+    while GPIO.input(0) != GPIO.LOW:  
+        if GPIO.input(13) == GPIO.LOW:  
             set_minute += 1
             time.sleep(0.2)
             set_minute = set_minute % 60
 
-        elif GPIO.input(5) == GPIO.LOW:  # Assuming Button[2] corresponds to GPIO input 2
+        elif GPIO.input(5) == GPIO.LOW:  
             set_minute -= 1
             time.sleep(0.2)
             set_minute = set_minute % 60
@@ -280,7 +198,6 @@ def set_alarm_p():
 
 alarm = "09:00:00"
 
-#disp_time
 def display_time():
     global alarm
     global alarm_set
@@ -302,7 +219,6 @@ def display_time():
         if GPIO.input(6) == GPIO.LOW:
             break
 
-#disp_temp
 def display_temperature():
     global alarm
     global alarm_set
@@ -383,8 +299,6 @@ def set_alarm():
     data = request.get_json()
     new_alarm = data.get('alarm')
 
-    # Tutaj dodaj kod do obsługi ustawiania alarmu
-    # Na przykład, możesz przypisać nowy alarm do zmiennej globalnej
     global alarm
     global alarm_set
     alarm_set = True
@@ -392,21 +306,19 @@ def set_alarm():
     save_alarm(True,new_alarm,"server")
     return jsonify({'alarm': new_alarm})
 
-
-# Funkcja pomocnicza do uzyskiwania aktualnego czasu
 def get_current_time():
     return datetime.now().strftime("%d-%m-%y %H:%M")
 
 @app.route('/')
 def home():
     return render_template('index.html')
-# Endpoint do uzyskiwania temperatury
+
 @app.route('/get_temperature')
 def get_temperature_route():
     temperature = get_temperature()
     return jsonify({'temperature': temperature})
 
-# Endpoint do uzyskiwania aktualnego czasu
+
 @app.route('/get_current_time')
 def get_current_time_route():
     current_time = get_current_time()
@@ -414,8 +326,7 @@ def get_current_time_route():
 
 @app.route('/turn_off_alarm', methods=['POST'])
 def turn_off_alarm():
-    # Tutaj dodaj kod do wyłączania alarmu
-    # Na przykład, możesz ustawić zmienną globalną alarm na None
+
     global alarm_set
     global alarm
     alarm_set = False
@@ -425,12 +336,12 @@ def turn_off_alarm():
 def get_alarm_status():
     global alarm_set
     read_alarm("server")
-    # Poniżej jest przykładowa implementacja
+
     if alarm_set:
         return 'Wlaczony'
     else:
         return 'Wylaczony'
-#Endpoint do uzyskiwania statusu alarmu
+
 
 @app.route('/get_alarm_status')
 def get_alarm_status_route():
@@ -442,7 +353,6 @@ def get_alarm():
     read_alarm("server")
     return jsonify({'alarm': alarm})
 
-# Endpoint do uzyskiwania ustawionego alarmu
 @app.route('/get_alarm')
 def get_alarm_route():
     global alarm
@@ -453,28 +363,17 @@ def get_alarm_route():
       'status': alarm_status
 }
     return jsonify(alarm_data)
-"""
-if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0')
-def flask_thread():
-    app.run(debug=True, host='0.0.0.0')
-"""
-# Wątek dla nieskończonej pętli
+
 def lcd_thread():
     while True:
         display_temperature()
         display_time()
 if __name__ == '__main__':
-    #lcd_thread = threading.Thread(target=lcd_thread)
-    #lcd_thread.start()
-    #app.run(debug=True, host='0.0.0.0')
-    # Uruchomienie serwera Flask
-    #app.run(debug=True, host='0.0.0.0')
-
+    
     lcd_thread = threading.Thread(target=lcd_thread)
     lcd_thread.start()
 
-    # Uruchomienie serwera Flask jako osobnego procesu
+    # Running Flask server as seperated process
     subprocess.Popen(["python3", "server.py"])
 
 
